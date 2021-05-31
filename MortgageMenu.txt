@@ -1,0 +1,259 @@
+/*
+Programmer: Joselyne Guillen
+File Name: MortgageMenu.java 
+Date: 11/29/20
+Version: 1.6
+Explanation of Program: 
+This program helps the user calculate their monthly mortgage payments,
+displays the monthly interest rate, and displays the remaining loan
+balance using a GUI that allows them to either input their loan 
+information or select loan information from a drop down list using
+a menu. They can use the menu at the top of the window to calculate 
+their monthly payments and display the loan balance and interest paid 
+for each payment over the term of the loan with the inputted or selected
+information. The menu also offers a reset option that allows the user to
+go back and enter new information and an exit option to close the program. 
+The inputs and outputs are all displayed in the window.
+*/
+import javax.swing.*;//import packages for GUI
+import java.awt.*;
+import java.awt.event.*;
+import java.text.DecimalFormat;//import package to set specific decimals
+public class MortgageMenu extends JFrame implements ActionListener, ItemListener //class MortgageMenu inherits from JFrame and uses ActionListener and ItemListener
+{
+     double loan = 0; //initialize variables
+     int t = 7;
+     double r = 5.35;
+     double interest = 0;
+     double monthlyPayment = 0; 
+    
+     FlowLayout flow = new FlowLayout(); //create object from class FlowLayout to set GUI components from left to right and top to bottom
+    
+     JMenuBar jmb = new JMenuBar(); //create Menu bar from class JMenuBar
+    
+     JMenu info = new JMenu("User Information");//create Menu from class JMenu
+     JMenu exit = new JMenu("Exit");
+     JMenu reset = new JMenu("Reset");
+    
+     JMenuItem input = new JMenuItem("Calculate with Inputs");//create Menu items from class JMenuItem
+     JMenuItem select = new JMenuItem("Calculate with Selections");
+     JMenuItem close = new JMenuItem("Close");
+     JMenuItem res = new JMenuItem("Clear Information");
+     
+     JLabel mortPayment = new JLabel("Mortgage:     ");//create label from class JLabel
+     JTextField mor = new JTextField(15);//create text box from class JTextField
+    
+     JLabel term = new JLabel("Term for Mortgage:   ");
+     JTextField te = new JTextField(6);
+    
+     JLabel rate = new JLabel("Rate for Mortgage:    ");
+     JTextField ra = new JTextField(6);
+    
+     JLabel blankSpace1 = new JLabel("                  ");//create blank label for spacing purposes
+     JLabel blankSpace2 = new JLabel("                   ");
+     JLabel blankSpace3 = new JLabel("                                  ");
+     
+     JLabel monthlyPay = new JLabel("The monthly payment is:    ");
+     JLabel pay = new JLabel("");//create label to display result of monthly payment
+     
+     JLabel direc = new JLabel("Welcome! Select an Option from the Menu");//create label from class JLabel to give user directions
+    
+     JComboBox rateTerm = new JComboBox(); //create drop down from class JComboBox
+    
+     JTextArea result = new JTextArea(20,30); //create text field
+     JScrollPane displayScroll = new JScrollPane(result, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); //create scroll bar in text field
+     
+     
+  public MortgageMenu()//default constructor
+  {
+     Container con = getContentPane();//create container from class Container
+     con.setLayout(flow); //components in row
+     
+     con.add(jmb);//add Menu bar to container
+     setJMenuBar(jmb);//set Menu bar
+      
+     con.add(info);//add Menus to container
+     con.add(exit);
+     con.add(reset);
+     jmb.add(info);//add Menus to Menu bar
+     jmb.add(reset);
+     jmb.add(exit);
+  
+     
+     con.add(input);//add Menu items to container
+     con.add(select);
+     con.add(close);
+     con.add(res);
+     info.add(input);//add Menu items to menus
+     info.add(select);
+     reset.add(res);
+     exit.add(close);
+    
+     
+     con.add(blankSpace3);//add blank spaces for spacing purposes to container
+     con.add(direc);//add labels
+     con.add(blankSpace1);
+     con.add(blankSpace2);
+     
+     con.add(mortPayment);//add labels
+     con.add(mor);//add text field
+     
+     con.add(rateTerm);//add dropdown list to container
+     rateTerm.addItem("7 years at 5.35%"); //add drop down boxes to drop down list
+     rateTerm.addItem("15 years at 5.5%");
+     rateTerm.addItem("30 years at 5.75%");
+     rateTerm.addItemListener(this); //adds actions behind the drop down boxes
+     
+
+     con.add(term);//add labels
+     con.add(te);//add text field
+     
+     con.add(rate);
+     con.add(ra);
+     
+     con.add(monthlyPay);
+     con.add(pay);
+
+     
+     con.add(displayScroll);//add text area with scroll bar to container
+     
+     input.addActionListener(this);//adds actions behind menu items
+     select.addActionListener(this);
+     close.addActionListener(this);
+     res.addActionListener(this);
+     
+     result.setText("Months" + "\t" + "Interest" + "\t" + "Loan Amount\n"); //initialize text field with text
+      
+  }
+  
+  public static void main(String [] args)//driver for class
+  {
+    MortgageMenu mortgage = new MortgageMenu();//create object of class MortgageUpgrade
+    
+    mortgage.setTitle("Mortgage Calculator");//gives the window a title
+    mortgage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //closes window on close
+    mortgage.setSize(500,500);//sets window dimension
+    mortgage.setVisible(true);//see window on screen
+  }
+  
+  public void actionPerformed(ActionEvent e)//method to code user actions
+    {
+        Object source = e.getSource();//create object from class Object
+        
+        if (source == input)//if user selects input information option
+        {
+          
+           String m = mor.getText();//gets user input
+           String tr = te.getText();
+           String rt = ra.getText();
+            
+            float mg = Float.parseFloat(m);//converts user input from string to float, int, and double
+            int tm = Integer.parseInt(tr);
+            double rte = Double.parseDouble(rt);
+            
+            
+            tm = tm *12; //converts term in years to term in months
+            rte = rte/1200.0;//converts yearly interest rate to monthly interest rate
+            
+            monthlyPayment = (mg*rte)/(1.0-Math.pow(rte+1,-tm));//calculates monthly payment
+            DecimalFormat df = new DecimalFormat("0.00"); //sets monthly payment to two decimal places
+            double deciMP = Double.valueOf(df.format(monthlyPayment));
+            String output = "" + deciMP; //converts data type of monthly payment to string
+            pay.setText(output); //displays monthly payment
+            
+            t = tm;//sets new term, rate, and mortgage amount
+            r = rte;
+            loan = mg;
+            
+        for (int i =1; i<=t;i++)//loop to display loan amount and interest for each month 
+        {
+            interest = loan *r;//calculates interest 
+            double deciInt = Double.valueOf(df.format(interest));//sets interest to two decimal places
+            
+           
+            loan = loan - (monthlyPayment - interest);//calculates new loan amount
+            double deciLoan = Double.valueOf(df.format(loan));//sets loan amount to two decimal places
+            
+            result.append(i+ " "+ "\t" + deciInt + " " + "\t" + deciLoan);//adds calculations to text field
+            result.append("\n");
+           
+        }
+    
+        
+        }
+        else if (source  == select)//if user selects select information option
+        {
+            
+          String m = mor.getText();//gets user input
+          double mg = Double.parseDouble(m);//converts user input from string to double
+          loan = mg;
+        
+        
+       
+          t = t *12; //converts term in years to term in months
+          r = r/1200.0;//converts yearly interest rate to monthly interest rate
+            
+          monthlyPayment = (loan*r)/(1.0-Math.pow(r+1,-t));//calculates monthly payment
+          DecimalFormat df = new DecimalFormat("0.00"); //sets monthly payment to two decimal places
+          double deciMP = Double.valueOf(df.format(monthlyPayment));
+          String output = "" + deciMP; //converts data type of monthly payment to string
+          pay.setText(output); //displays monthly payment
+          
+    
+        for (int i =1; i<=t;i++)//loop to display loan amount and interest for each month 
+        {
+            interest = loan *r;//calculates interest 
+            double deciInt = Double.valueOf(df.format(interest));//sets interest to two decimal places
+            
+           
+            loan = loan - (monthlyPayment - interest);//calculates new loan amount
+            double deciLoan = Double.valueOf(df.format(loan));//sets loan amount to two decimal places
+            
+            result.append(i+ " "+ "\t" + deciInt + " " + "\t" + deciLoan);//adds calculations to text field
+            result.append("\n");
+           
+        }
+            
+            
+        }
+        else if(source == res)
+        {
+            loan = 0; //initialize variables for drop down list
+            t = 7;
+            r = 5.35;
+            interest = 0;
+            monthlyPayment = 0; 
+            result.setText("");//clears all text in text area
+            pay.setText("");//empties the text/input
+            mor.setText("");
+            te.setText("");
+            ra.setText("");
+            
+        }
+        else if (source == close)
+        {
+             System.exit(0);//program exits
+        }
+        
+       
+        
+    }//end ActionListener
+  
+  public void itemStateChanged( ItemEvent e)//method to code user actions
+{
+    Object source = e.getSource();//create object from class Object
+    if (source == rateTerm)//if user clicks the drop down list
+    {
+        int i = rateTerm.getSelectedIndex();//gets selected drop down box
+        int[] termArray = {7,15,30};//parallel arrays with term and rate information according to specific drop down box
+        double[] rateArray = {5.35,5.5,5.75};
+        int term2 = termArray[i];//gets term from chosen drop down box
+        double rate2 = rateArray[i]; //gets rate from chosen drop down box
+        t = term2;//sets the term for further use in class
+        r = rate2;//sets the rate for further use in class
+    }
+  
+}//end itemStateChanged
+
+
+}//end class MortgageMenu
